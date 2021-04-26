@@ -15,7 +15,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 /**
  * @author huskyui
  */
-public class QuartzTest {
+public class _020_QuartzTestWithMultipleTrigger {
     public static void main(String[] args) {
         try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
@@ -30,15 +30,25 @@ public class QuartzTest {
                     .withIdentity("trigger1", "group1")
                     .startNow()
                     .withSchedule(simpleSchedule()
-                            .withIntervalInSeconds(5)
+                            .withIntervalInSeconds(1)
+                            .repeatForever())
+                    .build();
+
+            Trigger trigger1 = newTrigger()
+                    .withIdentity("trigger2","group1")
+                    .forJob("job1","group1")
+                    .startNow()
+                    .withSchedule(simpleSchedule()
+                            .withIntervalInSeconds(3)
                             .repeatForever())
                     .build();
 
             // Tell quartz to schedule the job using our trigger
             scheduler.scheduleJob(job, trigger);
+            scheduler.scheduleJob(trigger1);
 
             try {
-                TimeUnit.SECONDS.sleep(20);
+                TimeUnit.SECONDS.sleep(4);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
